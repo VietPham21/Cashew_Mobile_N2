@@ -396,7 +396,7 @@ ColorScheme getColorScheme(Brightness brightness) {
       background: appStateSettings["materialYou"]
           ? lightenPastel(getSettingConstants(appStateSettings)["accentColor"],
               amount: 0.91)
-          : Colors.white,
+          : const Color(0xFFE8EEF8),
     );
   } else {
     return ColorScheme.fromSeed(

@@ -40,6 +40,7 @@ class OnBoardingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         resizeToAvoidBottomInset: false,
+        backgroundColor: const Color(0xFFE8EEF8),
         body: OnBoardingPageBody(
             popNavigationWhenDone: popNavigationWhenDone,
             showPreviewDemoButton: showPreviewDemoButton));
