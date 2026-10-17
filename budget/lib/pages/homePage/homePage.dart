@@ -252,7 +252,6 @@ class HomePageState extends State<HomePage> with TickerProviderStateMixin {
             AndroidOnly(child: RenderHomePageWidgets()),
             Scaffold(
               resizeToAvoidBottomInset: false,
-              backgroundColor: const Color(0xFFE8EEF8),
               body: ScrollbarWrap(
                 scrollController: _scrollController,
                 child: ListView(

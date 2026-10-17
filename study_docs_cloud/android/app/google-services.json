@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1083285864321",
+    "project_id": "study-docs-cloud",
+    "storage_bucket": "study-docs-cloud.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1083285864321:android:7d6708245187bf1e23f280",
+        "android_client_info": {
+          "package_name": "com.example.study_docs"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1083285864321-bs37k67gtc252cjp7apormqqil4p5jrh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATX5q2lGRiQHbmMtbwRYI6YTctN0D8lx0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1083285864321-bs37k67gtc252cjp7apormqqil4p5jrh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
