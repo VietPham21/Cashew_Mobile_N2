@@ -9,7 +9,8 @@ plugins {
 
 android {
     namespace = "com.example.study_docs"
-    compileSdk = flutter.compileSdkVersion
+    // flutter_plugin_android_lifecycle (pulled in by file_picker) requires API 36+.
+    compileSdk = 36
     ndkVersion = flutter.ndkVersion
 
     compileOptions {

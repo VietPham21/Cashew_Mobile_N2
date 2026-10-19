@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1083285864321-37o54pdhiprgbbh71qhnl1qsnmndkasq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.study_docs",
+            "certificate_hash": "1c44a3ee5c179683e2a428e5bf18a05d8390ebd5"
+          }
+        },
+        {
           "client_id": "1083285864321-bs37k67gtc252cjp7apormqqil4p5jrh.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -29,6 +37,13 @@
             {
               "client_id": "1083285864321-bs37k67gtc252cjp7apormqqil4p5jrh.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1083285864321-u782ccc47q9lb03ot7eecolqhc3npues.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.studyDocs"
+              }
             }
           ]
         }

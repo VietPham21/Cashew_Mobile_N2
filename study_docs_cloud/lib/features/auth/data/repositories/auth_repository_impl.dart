@@ -1,5 +1,8 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient;
+
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../../../../core/services/notification_service.dart';
@@ -11,23 +14,38 @@ class AuthRepositoryImpl implements AuthRepository {
   AuthRepositoryImpl({
     required FirebaseAuth firebaseAuth,
     required SupabaseClient supabase,
-  })  : _firebaseAuth = firebaseAuth,
-        _supabase = supabase;
+  }) : _firebaseAuth = firebaseAuth,
+       _supabase = supabase;
 
   AppUser _toAppUser(User u, {String? id}) => AppUser(
-        id: id ?? u.uid,
-        email: u.email ?? '',
-        displayName: u.displayName ?? u.email ?? 'User',
-        avatarUrl: u.photoURL,
-      );
+    id: id ?? u.uid,
+    email: u.email ?? '',
+    displayName: u.displayName ?? u.email ?? 'User',
+    avatarUrl: u.photoURL,
+  );
 
   @override
   Future<AppUser> signInWithGoogle() async {
-    final provider = GoogleAuthProvider()
-      ..addScope('email')
-      ..setCustomParameters({'prompt': 'select_account'});
+    late final UserCredential cred;
+    if (kIsWeb) {
+      final provider = GoogleAuthProvider()
+        ..addScope('email')
+        ..setCustomParameters({'prompt': 'select_account'});
+      cred = await _firebaseAuth.signInWithPopup(provider);
+    } else {
+      final googleUser = await GoogleSignIn(scopes: ['email']).signIn();
+      if (googleUser == null) {
+        throw Exception('Dang nhap da bi huy');
+      }
 
-    final cred = await _firebaseAuth.signInWithPopup(provider);
+      final googleAuth = await googleUser.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+      cred = await _firebaseAuth.signInWithCredential(credential);
+    }
+
     final user = cred.user;
     if (user == null) throw Exception('Dang nhap that bai');
 
@@ -73,6 +91,9 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+    if (!kIsWeb) {
+      await GoogleSignIn().signOut();
+    }
   }
 
   @override
@@ -82,8 +103,7 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
-  Stream<AppUser?> get authStateChanges =>
-      _firebaseAuth.authStateChanges().map(
-            (u) => u == null ? null : _toAppUser(u),
-          );
+  Stream<AppUser?> get authStateChanges => _firebaseAuth.authStateChanges().map(
+    (u) => u == null ? null : _toAppUser(u),
+  );
 }
