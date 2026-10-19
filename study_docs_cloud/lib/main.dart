@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' hide User;
 
 import 'core/constants/supabase_constants.dart';
+import 'core/services/notification_service.dart';
 import 'features/auth/data/repositories/auth_repository_impl.dart';
 import 'features/auth/domain/usecases/sign_in_google.dart';
 import 'features/auth/domain/usecases/sign_out.dart';
@@ -13,6 +14,8 @@ import 'features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import 'features/documents/data/repositories/documents_repository_impl.dart';
 import 'features/documents/presentation/pages/documents_list_page.dart';
 import 'features/documents/presentation/viewmodels/documents_viewmodel.dart';
+import 'features/borrow/data/repositories/borrow_repository_impl.dart';
+import 'features/borrow/presentation/viewmodels/borrow_viewmodel.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -22,15 +25,12 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  // Supabase dung Firebase token qua accessToken callback
   await Supabase.initialize(
     url: SupabaseConstants.supabaseUrl,
     anonKey: SupabaseConstants.supabaseAnonKey,
     accessToken: () async {
       try {
-        final token = await FirebaseAuth.instance.currentUser
-            ?.getIdToken(false);
-        return token;
+        return await FirebaseAuth.instance.currentUser?.getIdToken(false);
       } catch (_) {
         return null;
       }
@@ -68,28 +68,65 @@ class StudyDocsApp extends StatelessWidget {
   }
 }
 
-class _AppRouter extends StatelessWidget {
+class _AppRouter extends StatefulWidget {
   const _AppRouter();
+
+  @override
+  State<_AppRouter> createState() => _AppRouterState();
+}
+
+class _AppRouterState extends State<_AppRouter> {
+  bool _fcmReady = false;
+
+  Future<void> _setupFcm(String userId) async {
+    if (_fcmReady) return;
+    _fcmReady = true;
+    try {
+      final token = await NotificationService.initialize();
+      if (token != null) {
+        await NotificationService.saveToken(userId, token);
+      }
+    } catch (_) {}
+  }
 
   @override
   Widget build(BuildContext context) {
     return Consumer<AuthViewModel>(
       builder: (context, authVm, _) {
         if (authVm.currentUser == null) {
+          _fcmReady = false;
           return const LoginPage();
         }
 
         final userId = authVm.currentUser!.id;
+        final supabase = Supabase.instance.client;
 
-        return ChangeNotifierProvider(
+        // Setup FCM sau khi login
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _setupFcm(userId);
+        });
+
+        return MultiProvider(
           key: ValueKey(userId),
-          create: (_) => DocumentsViewModel(
-            repository: DocumentsRepositoryImpl(
-              supabase: Supabase.instance.client,
-              currentUserId: userId,
+          providers: [
+            ChangeNotifierProvider(
+              create: (_) => DocumentsViewModel(
+                repository: DocumentsRepositoryImpl(
+                  supabase: supabase,
+                  currentUserId: userId,
+                ),
+                currentUserId: userId,
+              ),
             ),
-            currentUserId: userId,
-          ),
+            ChangeNotifierProvider(
+              create: (_) => BorrowViewModel(
+                repository: BorrowRepositoryImpl(
+                  supabase: supabase,
+                  currentUserId: userId,
+                ),
+              ),
+            ),
+          ],
           child: const DocumentsListPage(),
         );
       },

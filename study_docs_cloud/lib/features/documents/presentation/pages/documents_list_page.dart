@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
+
+import '../../../../core/utils/responsive.dart';
+
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+
 import '../../domain/entities/study_document.dart';
 import '../viewmodels/documents_viewmodel.dart';
 import '../../../../features/auth/presentation/viewmodels/auth_viewmodel.dart';
 import '../../../../features/permissions/presentation/widgets/share_dialog.dart';
 import 'document_detail_page.dart';
 import 'document_form_page.dart';
+import '../../../borrow/presentation/pages/borrow_requests_page.dart';
+import '../../../borrow/presentation/viewmodels/borrow_viewmodel.dart';
+import 'recommendations_page.dart';
 
 class DocumentsListPage extends StatefulWidget {
   const DocumentsListPage({super.key});
@@ -34,54 +41,70 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
 
   Color _typeColor(DocumentType t) {
     switch (t) {
-      case DocumentType.lecture:    return Colors.blue;
-      case DocumentType.assignment: return Colors.orange;
-      case DocumentType.reference:  return Colors.green;
-      case DocumentType.other:      return Colors.grey;
+      case DocumentType.lecture:
+        return Colors.blue;
+      case DocumentType.assignment:
+        return Colors.orange;
+      case DocumentType.reference:
+        return Colors.green;
+      case DocumentType.other:
+        return Colors.grey;
     }
   }
 
   String _typeLabel(DocumentType t) {
     switch (t) {
-      case DocumentType.lecture:    return 'Bai giang';
-      case DocumentType.assignment: return 'Bai tap';
-      case DocumentType.reference:  return 'Tai lieu';
-      case DocumentType.other:      return 'Khac';
+      case DocumentType.lecture:
+        return 'Bai giang';
+      case DocumentType.assignment:
+        return 'Bai tap';
+      case DocumentType.reference:
+        return 'Tai lieu';
+      case DocumentType.other:
+        return 'Khac';
     }
   }
 
   IconData _typeIcon(DocumentType t) {
     switch (t) {
-      case DocumentType.lecture:    return Icons.menu_book;
-      case DocumentType.assignment: return Icons.assignment;
-      case DocumentType.reference:  return Icons.library_books;
-      case DocumentType.other:      return Icons.folder;
+      case DocumentType.lecture:
+        return Icons.menu_book;
+      case DocumentType.assignment:
+        return Icons.assignment;
+      case DocumentType.reference:
+        return Icons.library_books;
+      case DocumentType.other:
+        return Icons.folder;
     }
   }
 
-  void _openDetail(BuildContext context, StudyDocument doc,
-      DocumentsViewModel vm) {
+  void _openDetail(
+    BuildContext context,
+    StudyDocument doc,
+    DocumentsViewModel vm,
+  ) {
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (_) => DocumentDetailPage(
           doc: doc,
           canEdit: vm.canEdit(doc),
+          canAccessFile: vm.canAccessFile(doc),
           viewModel: vm,
         ),
       ),
     ).then((_) => vm.loadAll());
   }
 
-  void _openForm(BuildContext context, DocumentsViewModel vm,
-      {StudyDocument? existing}) {
+  void _openForm(
+    BuildContext context,
+    DocumentsViewModel vm, {
+    StudyDocument? existing,
+  }) {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => DocumentFormPage(
-          existing: existing,
-          viewModel: vm,
-        ),
+        builder: (_) => DocumentFormPage(existing: existing, viewModel: vm),
       ),
     ).then((_) => vm.loadAll());
   }
@@ -101,10 +124,40 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
               padding: const EdgeInsets.only(right: 4),
               child: CircleAvatar(
                 radius: 16,
-                backgroundImage:
-                    NetworkImage(authVm.currentUser!.avatarUrl!),
+                backgroundImage: NetworkImage(authVm.currentUser!.avatarUrl!),
               ),
             ),
+
+          IconButton(
+            icon: const Icon(Icons.auto_awesome),
+            tooltip: 'For You',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChangeNotifierProvider.value(
+                    value: context.read<DocumentsViewModel>(),
+                    child: const RecommendationsPage(),
+                  ),
+                ),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.inbox),
+            tooltip: 'Borrow Requests',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => ChangeNotifierProvider.value(
+                    value: context.read<BorrowViewModel>(),
+                    child: const BorrowRequestsPage(),
+                  ),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.logout),
             tooltip: 'Dang xuat',
@@ -124,8 +177,7 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
               decoration: InputDecoration(
                 hintText: 'Tim kiem tai lieu...',
                 hintStyle: const TextStyle(color: Colors.white70),
-                prefixIcon:
-                    const Icon(Icons.search, color: Colors.white70),
+                prefixIcon: const Icon(Icons.search, color: Colors.white70),
                 suffixIcon: IconButton(
                   icon: const Icon(Icons.clear, color: Colors.white70),
                   onPressed: () {
@@ -140,9 +192,8 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                   borderSide: BorderSide.none,
                 ),
               ),
-              onChanged: (v) => context
-                  .read<DocumentsViewModel>()
-                  .searchDocs(keyword: v),
+              onChanged: (v) =>
+                  context.read<DocumentsViewModel>().searchDocs(keyword: v),
             ),
           ),
 
@@ -161,22 +212,21 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                           ? Colors.indigo.shade50
                           : null,
                     ),
-                    child:
-                        Text('Cua toi (${vm.myDocuments.length})'),
+                    child: Text('Cua toi (${vm.myDocuments.length})'),
                   ),
                 ),
                 Expanded(
                   child: TextButton(
                     onPressed: () => vm.toggleShowShared(true),
                     style: TextButton.styleFrom(
-                      foregroundColor:
-                          vm.showShared ? Colors.indigo : Colors.grey,
+                      foregroundColor: vm.showShared
+                          ? Colors.indigo
+                          : Colors.grey,
                       backgroundColor: vm.showShared
                           ? Colors.indigo.shade50
                           : null,
                     ),
-                    child: Text(
-                        'Duoc chia se (${vm.sharedDocuments.length})'),
+                    child: Text('Duoc chia se (${vm.sharedDocuments.length})'),
                   ),
                 ),
               ],
@@ -190,7 +240,9 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
               child: ListView(
                 scrollDirection: Axis.horizontal,
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 12, vertical: 6),
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 children: [
                   FilterChip(
                     label: const Text('Tat ca'),
@@ -201,19 +253,20 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                     },
                   ),
                   const SizedBox(width: 8),
-                  ...DocumentType.values.map((t) => Padding(
-                        padding: const EdgeInsets.only(right: 8),
-                        child: FilterChip(
-                          avatar: Icon(_typeIcon(t), size: 14),
-                          label: Text(_typeLabel(t)),
-                          selected: vm.filterType == t,
-                          onSelected: (_) {
-                            vm.filterType =
-                                vm.filterType == t ? null : t;
-                            vm.searchDocs(type: vm.filterType);
-                          },
-                        ),
-                      )),
+                  ...DocumentType.values.map(
+                    (t) => Padding(
+                      padding: const EdgeInsets.only(right: 8),
+                      child: FilterChip(
+                        avatar: Icon(_typeIcon(t), size: 14),
+                        label: Text(_typeLabel(t)),
+                        selected: vm.filterType == t,
+                        onSelected: (_) {
+                          vm.filterType = vm.filterType == t ? null : t;
+                          vm.searchDocs(type: vm.filterType);
+                        },
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -224,8 +277,7 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
             child: Consumer<DocumentsViewModel>(
               builder: (context, vm, _) {
                 if (vm.isLoading) {
-                  return const Center(
-                      child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
 
                 if (vm.errorMessage != null) {
@@ -233,8 +285,11 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.error_outline,
-                            size: 48, color: Colors.red),
+                        const Icon(
+                          Icons.error_outline,
+                          size: 48,
+                          color: Colors.red,
+                        ),
                         const SizedBox(height: 8),
                         Text(vm.errorMessage!),
                         TextButton(
@@ -258,40 +313,72 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(Icons.folder_open,
-                            size: 64, color: Colors.grey.shade400),
+                        Icon(
+                          Icons.folder_open,
+                          size: 64,
+                          color: Colors.grey.shade400,
+                        ),
                         const SizedBox(height: 12),
                         Text(
                           vm.showShared
                               ? 'Chua co tai lieu duoc chia se'
                               : 'Chua co tai lieu nao',
-                          style: TextStyle(
-                              color: Colors.grey.shade600),
+                          style: TextStyle(color: Colors.grey.shade600),
                         ),
                         if (!vm.showShared)
-                          Text('Nhan + de them tai lieu moi',
-                              style: TextStyle(
-                                  color: Colors.grey.shade400)),
+                          Text(
+                            'Nhan + de them tai lieu moi',
+                            style: TextStyle(color: Colors.grey.shade400),
+                          ),
                       ],
                     ),
                   );
                 }
 
-                return RefreshIndicator(
-                  onRefresh: vm.loadAll,
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: docs.length,
-                    separatorBuilder: (_, __) =>
-                        const SizedBox(height: 8),
-                    itemBuilder: (context, i) {
-                      final doc = docs[i];
-                      final isOwner =
-                          doc.ownerId == authVm.currentUser?.id;
-                      return _buildCard(
-                          context, doc, vm, isOwner);
-                    },
-                  ),
+                return LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isMobile = Responsive.isMobile(context);
+                    final columns = Responsive.gridColumns(context);
+                    final pad = Responsive.padding(context);
+
+                    if (isMobile) {
+                      return RefreshIndicator(
+                        onRefresh: vm.loadAll,
+                        child: ListView.separated(
+                          padding: EdgeInsets.all(pad),
+                          itemCount: docs.length,
+                          separatorBuilder: (_, __) =>
+                              const SizedBox(height: 8),
+                          itemBuilder: (context, i) {
+                            final doc = docs[i];
+                            final isOwner =
+                                doc.ownerId == authVm.currentUser?.id;
+                            return _buildCard(context, doc, vm, isOwner);
+                          },
+                        ),
+                      );
+                    }
+
+                    // Tablet / Desktop: GridView
+                    return RefreshIndicator(
+                      onRefresh: vm.loadAll,
+                      child: GridView.builder(
+                        padding: EdgeInsets.all(pad),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: columns,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                          childAspectRatio: 2.2,
+                        ),
+                        itemCount: docs.length,
+                        itemBuilder: (context, i) {
+                          final doc = docs[i];
+                          final isOwner = doc.ownerId == authVm.currentUser?.id;
+                          return _buildCard(context, doc, vm, isOwner);
+                        },
+                      ),
+                    );
+                  },
                 );
               },
             ),
@@ -310,17 +397,19 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
     );
   }
 
-  Widget _buildCard(BuildContext context, StudyDocument doc,
-      DocumentsViewModel vm, bool isOwner) {
+  Widget _buildCard(
+    BuildContext context,
+    StudyDocument doc,
+    DocumentsViewModel vm,
+    bool isOwner,
+  ) {
     final color = _typeColor(doc.type);
-    final date =
-        DateFormat('dd/MM/yyyy HH:mm').format(doc.updatedAt);
+    final date = DateFormat('dd/MM/yyyy HH:mm').format(doc.updatedAt);
     final userCanEdit = vm.canEdit(doc);
 
     return Card(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         // TAT CA card deu click duoc de xem chi tiet
@@ -349,26 +438,26 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                           child: Text(
                             doc.title,
                             style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         if (doc.isPublic)
-                          const Icon(Icons.public,
-                              size: 14, color: Colors.green),
+                          const Icon(
+                            Icons.public,
+                            size: 14,
+                            color: Colors.green,
+                          ),
                         if (!isOwner)
                           Padding(
                             padding: const EdgeInsets.only(left: 4),
                             child: Icon(
-                              userCanEdit
-                                  ? Icons.edit
-                                  : Icons.visibility,
+                              userCanEdit ? Icons.edit : Icons.visibility,
                               size: 14,
-                              color: userCanEdit
-                                  ? Colors.orange
-                                  : Colors.blue,
+                              color: userCanEdit ? Colors.orange : Colors.blue,
                             ),
                           ),
                       ],
@@ -376,21 +465,27 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.school,
-                            size: 12, color: Colors.grey.shade500),
+                        Icon(
+                          Icons.school,
+                          size: 12,
+                          color: Colors.grey.shade500,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             doc.course,
                             style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade600),
+                              fontSize: 12,
+                              color: Colors.grey.shade600,
+                            ),
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 6, vertical: 1),
+                            horizontal: 6,
+                            vertical: 1,
+                          ),
                           decoration: BoxDecoration(
                             color: color.withValues(alpha: 0.12),
                             borderRadius: BorderRadius.circular(4),
@@ -398,26 +493,30 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                           child: Text(
                             _typeLabel(doc.type),
                             style: TextStyle(
-                                color: color,
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600),
+                              color: color,
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    if (doc.hasFile)
+                    if (doc.hasFile && vm.canAccessFile(doc))
                       Row(
                         children: [
-                          Icon(Icons.attach_file,
-                              size: 12,
-                              color: Colors.grey.shade400),
+                          Icon(
+                            Icons.attach_file,
+                            size: 12,
+                            color: Colors.grey.shade400,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               doc.fileName,
                               style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey.shade400),
+                                fontSize: 11,
+                                color: Colors.grey.shade400,
+                              ),
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -426,8 +525,9 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                     Text(
                       date,
                       style: TextStyle(
-                          fontSize: 10,
-                          color: Colors.grey.shade400),
+                        fontSize: 10,
+                        color: Colors.grey.shade400,
+                      ),
                     ),
                   ],
                 ),
@@ -456,15 +556,14 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                           content: Text('Xoa "${doc.title}"?'),
                           actions: [
                             TextButton(
-                              onPressed: () =>
-                                  Navigator.pop(context, false),
+                              onPressed: () => Navigator.pop(context, false),
                               child: const Text('Huy'),
                             ),
                             TextButton(
-                              onPressed: () =>
-                                  Navigator.pop(context, true),
+                              onPressed: () => Navigator.pop(context, true),
                               style: TextButton.styleFrom(
-                                  foregroundColor: Colors.red),
+                                foregroundColor: Colors.red,
+                              ),
                               child: const Text('Xoa'),
                             ),
                           ],
@@ -476,31 +575,33 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
                   itemBuilder: (_) => [
                     const PopupMenuItem(
                       value: 'edit',
-                      child: Row(children: [
-                        Icon(Icons.edit, size: 18),
-                        SizedBox(width: 8),
-                        Text('Sua'),
-                      ]),
+                      child: Row(
+                        children: [
+                          Icon(Icons.edit, size: 18),
+                          SizedBox(width: 8),
+                          Text('Sua'),
+                        ],
+                      ),
                     ),
                     const PopupMenuItem(
                       value: 'share',
-                      child: Row(children: [
-                        Icon(Icons.share,
-                            size: 18, color: Colors.blue),
-                        SizedBox(width: 8),
-                        Text('Chia se',
-                            style: TextStyle(color: Colors.blue)),
-                      ]),
+                      child: Row(
+                        children: [
+                          Icon(Icons.share, size: 18, color: Colors.blue),
+                          SizedBox(width: 8),
+                          Text('Chia se', style: TextStyle(color: Colors.blue)),
+                        ],
+                      ),
                     ),
                     const PopupMenuItem(
                       value: 'delete',
-                      child: Row(children: [
-                        Icon(Icons.delete,
-                            size: 18, color: Colors.red),
-                        SizedBox(width: 8),
-                        Text('Xoa',
-                            style: TextStyle(color: Colors.red)),
-                      ]),
+                      child: Row(
+                        children: [
+                          Icon(Icons.delete, size: 18, color: Colors.red),
+                          SizedBox(width: 8),
+                          Text('Xoa', style: TextStyle(color: Colors.red)),
+                        ],
+                      ),
                     ),
                   ],
                 )

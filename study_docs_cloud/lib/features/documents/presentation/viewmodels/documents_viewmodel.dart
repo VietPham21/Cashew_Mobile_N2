@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../domain/entities/study_document.dart';
 import '../../domain/repositories/documents_repository.dart';
 
@@ -8,31 +9,33 @@ class DocumentsViewModel extends ChangeNotifier {
   final DocumentsRepository repository;
   final String currentUserId;
 
-  DocumentsViewModel({
-    required this.repository,
-    required this.currentUserId,
-  });
+  DocumentsViewModel({required this.repository, required this.currentUserId});
 
   List<StudyDocument> myDocuments = [];
   List<StudyDocument> sharedDocuments = [];
   List<StudyDocument> searchResults = [];
+  List<StudyDocument> recommendations = [];
   bool isLoading = false;
   String? errorMessage;
   String searchKeyword = '';
   DocumentType? filterType;
   bool showShared = false;
 
-  // Map documentId -> permission_level cho tai lieu duoc chia se
   Map<String, String> sharedPermissions = {};
 
   List<StudyDocument> get displayDocuments =>
       showShared ? sharedDocuments : myDocuments;
 
-  // Kiem tra user co quyen edit document nay khong
   bool canEdit(StudyDocument doc) {
     if (doc.ownerId == currentUserId) return true;
     return sharedPermissions[doc.id] == 'edit';
   }
+
+  bool canAccessFile(StudyDocument doc) =>
+      doc.ownerId == currentUserId || sharedPermissions.containsKey(doc.id);
+
+  Future<String> createFileSignedUrl(String path) =>
+      repository.createFileSignedUrl(path);
 
   Future<void> loadAll() async {
     isLoading = true;
@@ -42,8 +45,7 @@ class DocumentsViewModel extends ChangeNotifier {
     try {
       myDocuments = await repository.getMyDocuments();
       sharedDocuments = await repository.getSharedWithMe();
-
-      // Lay quyen cua tung tai lieu duoc chia se
+      recommendations = await repository.getRecommendations();
       await _loadSharedPermissions();
     } catch (e) {
       errorMessage = e.toString();
@@ -54,11 +56,6 @@ class DocumentsViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadSharedPermissions() async {
-    if (sharedDocuments.isEmpty) {
-      sharedPermissions = {};
-      return;
-    }
-
     try {
       final res = await Supabase.instance.client
           .from('permissions')
@@ -67,8 +64,7 @@ class DocumentsViewModel extends ChangeNotifier {
 
       sharedPermissions = {};
       for (final row in res as List) {
-        sharedPermissions[row['document_id']] =
-            row['permission_level'];
+        sharedPermissions[row['document_id']] = row['permission_level'];
       }
     } catch (_) {}
   }
@@ -98,6 +94,9 @@ class DocumentsViewModel extends ChangeNotifier {
     required List<String> tags,
     required String notes,
     required bool isPublic,
+    double? latitude,
+    double? longitude,
+    String? locationName,
     List<int>? fileBytes,
     String? fileName,
   }) async {
@@ -110,19 +109,18 @@ class DocumentsViewModel extends ChangeNotifier {
         course: course,
         tags: tags,
         notes: notes,
-        fileUrl: '',
+        filePath: '',
         fileName: fileName ?? '',
         fileSize: 0,
         isPublic: isPublic,
+        latitude: latitude,
+        longitude: longitude,
+        locationName: locationName,
         createdAt: DateTime.now(),
         updatedAt: DateTime.now(),
       );
 
-      await repository.add(
-        doc,
-        fileBytes: fileBytes,
-        fileName: fileName,
-      );
+      await repository.add(doc, fileBytes: fileBytes, fileName: fileName);
       await loadAll();
       return true;
     } catch (e) {
@@ -138,11 +136,7 @@ class DocumentsViewModel extends ChangeNotifier {
     String? fileName,
   }) async {
     try {
-      await repository.update(
-        doc,
-        fileBytes: fileBytes,
-        fileName: fileName,
-      );
+      await repository.update(doc, fileBytes: fileBytes, fileName: fileName);
       await loadAll();
       return true;
     } catch (e) {

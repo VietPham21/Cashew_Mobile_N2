@@ -1,22 +1,20 @@
-enum DocumentType {
-  lecture,
-  assignment,
-  reference,
-  other,
-}
+enum DocumentType { lecture, assignment, reference, other }
 
 class StudyDocument {
   final String id;
   final String ownerId;
   final String title;
-  final DocumentType type;
   final String course;
-  final List<String> tags;
+  final DocumentType type;
   final String notes;
-  final String fileUrl;
+  final List<String> tags;
+  final String filePath;
   final String fileName;
   final int fileSize;
   final bool isPublic;
+  final double? latitude;
+  final double? longitude;
+  final String? locationName;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -24,45 +22,58 @@ class StudyDocument {
     required this.id,
     required this.ownerId,
     required this.title,
-    required this.type,
     required this.course,
-    required this.tags,
+    required this.type,
     required this.notes,
-    required this.fileUrl,
+    required this.tags,
+    required this.filePath,
     required this.fileName,
     required this.fileSize,
     required this.isPublic,
+    this.latitude,
+    this.longitude,
+    this.locationName,
     required this.createdAt,
     required this.updatedAt,
   });
 
+  bool get hasFile => filePath.isNotEmpty;
+
   StudyDocument copyWith({
+    String? id,
+    String? ownerId,
     String? title,
-    DocumentType? type,
     String? course,
-    List<String>? tags,
+    DocumentType? type,
     String? notes,
-    String? fileUrl,
+    List<String>? tags,
+    String? filePath,
     String? fileName,
     int? fileSize,
     bool? isPublic,
+    double? latitude,
+    double? longitude,
+    String? locationName,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) {
     return StudyDocument(
-      id: id,
-      ownerId: ownerId,
+      id: id ?? this.id,
+      ownerId: ownerId ?? this.ownerId,
       title: title ?? this.title,
-      type: type ?? this.type,
       course: course ?? this.course,
-      tags: tags ?? this.tags,
+      type: type ?? this.type,
       notes: notes ?? this.notes,
-      fileUrl: fileUrl ?? this.fileUrl,
+      tags: tags ?? this.tags,
+      filePath: filePath ?? this.filePath,
       fileName: fileName ?? this.fileName,
       fileSize: fileSize ?? this.fileSize,
       isPublic: isPublic ?? this.isPublic,
-      createdAt: createdAt,
-      updatedAt: DateTime.now(),
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      locationName: locationName ?? this.locationName,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
-
-  bool get hasFile => fileUrl.isNotEmpty;
 }

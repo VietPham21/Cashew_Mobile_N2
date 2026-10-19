@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' show SupabaseClient;
 import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../../../core/services/notification_service.dart';
 
 class AuthRepositoryImpl implements AuthRepository {
   final FirebaseAuth _firebaseAuth;
@@ -13,8 +14,8 @@ class AuthRepositoryImpl implements AuthRepository {
   })  : _firebaseAuth = firebaseAuth,
         _supabase = supabase;
 
-  AppUser _toAppUser(User u) => AppUser(
-        id: u.uid,
+  AppUser _toAppUser(User u, {String? id}) => AppUser(
+        id: id ?? u.uid,
         email: u.email ?? '',
         displayName: u.displayName ?? u.email ?? 'User',
         avatarUrl: u.photoURL,
@@ -30,20 +31,43 @@ class AuthRepositoryImpl implements AuthRepository {
     final user = cred.user;
     if (user == null) throw Exception('Dang nhap that bai');
 
-    // Lay Firebase ID token
-    final idToken = await user.getIdToken(true);
+    await user.getIdToken(true);
 
-    // Luu user vao Supabase voi token trong header
-    await _supabase.from('users').upsert(
-      {
+    final email = user.email;
+    if (email == null || email.isEmpty) {
+      throw Exception('Google account did not provide an email address');
+    }
+
+    // Demo data may already contain this email under a seeded ID. Keep that
+    // canonical database ID so documents and permissions remain connected.
+    final existing = await _supabase
+        .from('users')
+        .select('id')
+        .eq('email', email)
+        .maybeSingle();
+
+    final String databaseUserId;
+    if (existing != null) {
+      databaseUserId = existing['id'] as String;
+    } else {
+      await _supabase.from('users').insert({
         'id': user.uid,
-        'email': user.email ?? '',
-        'display_name': user.displayName ?? user.email ?? 'User',
+        'email': email,
+        'display_name': user.displayName ?? email,
         'avatar_url': user.photoURL,
-      },
-    );
+      });
+      databaseUserId = user.uid;
+    }
 
-    return _toAppUser(user);
+    // Luu FCM token sau khi login
+    try {
+      final fcmToken = await NotificationService.initialize();
+      if (fcmToken != null) {
+        await NotificationService.saveToken(user.uid, fcmToken);
+      }
+    } catch (_) {}
+
+    return _toAppUser(user, id: databaseUserId);
   }
 
   @override
