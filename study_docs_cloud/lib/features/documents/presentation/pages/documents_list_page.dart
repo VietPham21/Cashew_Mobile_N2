@@ -794,7 +794,13 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
               itemBuilder: (context, index) {
                 final doc = docs[index];
                 final isOwner = doc.ownerId == currentUserId;
-                return _buildCard(context, doc, vm, isOwner);
+                // ListView gives each child an unbounded height. The card
+                // uses Spacer to keep its metadata row at the bottom, so give
+                // it a fixed mobile height just as the desktop grid does.
+                return SizedBox(
+                  height: 246,
+                  child: _buildCard(context, doc, vm, isOwner),
+                );
               },
             ),
           );
