@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+
 import '../viewmodels/borrow_viewmodel.dart';
 import '../../domain/entities/borrow_request.dart';
 
@@ -31,17 +32,23 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
 
   Color _statusColor(BorrowStatus s) {
     switch (s) {
-      case BorrowStatus.approved: return Colors.green;
-      case BorrowStatus.rejected: return Colors.red;
-      default:                    return Colors.orange;
+      case BorrowStatus.approved:
+        return Colors.green;
+      case BorrowStatus.rejected:
+        return Colors.red;
+      default:
+        return Colors.orange;
     }
   }
 
   String _statusLabel(BorrowStatus s) {
     switch (s) {
-      case BorrowStatus.approved: return 'Approved';
-      case BorrowStatus.rejected: return 'Rejected';
-      default:                    return 'Pending';
+      case BorrowStatus.approved:
+        return 'Approved';
+      case BorrowStatus.rejected:
+        return 'Rejected';
+      default:
+        return 'Pending';
     }
   }
 
@@ -85,7 +92,10 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
           children: [
             Icon(Icons.inbox_outlined, size: 64, color: Colors.grey),
             SizedBox(height: 12),
-            Text('No incoming borrow requests', style: TextStyle(color: Colors.grey)),
+            Text(
+              'No incoming borrow requests',
+              style: TextStyle(color: Colors.grey),
+            ),
           ],
         ),
       );
@@ -107,16 +117,26 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                 children: [
                   Row(
                     children: [
-                      const Icon(Icons.description, size: 18, color: Colors.indigo),
+                      Icon(
+                        Icons.description,
+                        size: 18,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
                           req.documentTitle,
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15,
+                          ),
                         ),
                       ),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 3,
+                        ),
                         decoration: BoxDecoration(
                           color: _statusColor(req.status).withOpacity(0.15),
                           borderRadius: BorderRadius.circular(12),
@@ -124,7 +144,10 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                         ),
                         child: Text(
                           _statusLabel(req.status),
-                          style: TextStyle(color: _statusColor(req.status), fontSize: 12),
+                          style: TextStyle(
+                            color: _statusColor(req.status),
+                            fontSize: 12,
+                          ),
                         ),
                       ),
                     ],
@@ -134,7 +157,13 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                     children: [
                       const Icon(Icons.person, size: 15, color: Colors.grey),
                       const SizedBox(width: 4),
-                      Text(req.requesterEmail, style: const TextStyle(fontSize: 13, color: Colors.grey)),
+                      Text(
+                        req.requesterEmail,
+                        style: const TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                        ),
+                      ),
                     ],
                   ),
                   if (req.message != null && req.message!.isNotEmpty) ...[
@@ -148,9 +177,18 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Icon(Icons.chat_bubble_outline, size: 14, color: Colors.grey),
+                          const Icon(
+                            Icons.chat_bubble_outline,
+                            size: 14,
+                            color: Colors.grey,
+                          ),
                           const SizedBox(width: 6),
-                          Expanded(child: Text(req.message!, style: const TextStyle(fontSize: 13))),
+                          Expanded(
+                            child: Text(
+                              req.message!,
+                              style: const TextStyle(fontSize: 13),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -170,13 +208,20 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                             await vm.reject(req.id);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Request rejected')),
+                                const SnackBar(
+                                  content: Text('Request rejected'),
+                                ),
                               );
                             }
                           },
                           icon: const Icon(Icons.close, color: Colors.red),
-                          label: const Text('Reject', style: TextStyle(color: Colors.red)),
-                          style: OutlinedButton.styleFrom(side: const BorderSide(color: Colors.red)),
+                          label: const Text(
+                            'Reject',
+                            style: TextStyle(color: Colors.red),
+                          ),
+                          style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.red),
+                          ),
                         ),
                         const SizedBox(width: 8),
                         ElevatedButton.icon(
@@ -184,13 +229,18 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                             await vm.approve(req.id);
                             if (context.mounted) {
                               ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Request approved!')),
+                                const SnackBar(
+                                  content: Text('Request approved!'),
+                                ),
                               );
                             }
                           },
                           icon: const Icon(Icons.check),
                           label: const Text('Approve'),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                          ),
                         ),
                       ],
                     ),
@@ -212,7 +262,10 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
           children: [
             Icon(Icons.send_outlined, size: 64, color: Colors.grey),
             SizedBox(height: 12),
-            Text('You have not sent any borrow requests', style: TextStyle(color: Colors.grey)),
+            Text(
+              'You have not sent any borrow requests',
+              style: TextStyle(color: Colors.grey),
+            ),
           ],
         ),
       );
@@ -232,7 +285,10 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                 backgroundColor: _statusColor(req.status).withOpacity(0.15),
                 child: Icon(Icons.description, color: _statusColor(req.status)),
               ),
-              title: Text(req.documentTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+              title: Text(
+                req.documentTitle,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               subtitle: Text(
                 'Sent: ${req.createdAt.toLocal().toString().substring(0, 16)}',
                 style: const TextStyle(fontSize: 12),
@@ -246,7 +302,10 @@ class _BorrowRequestsPageState extends State<BorrowRequestsPage>
                 ),
                 child: Text(
                   _statusLabel(req.status),
-                  style: TextStyle(color: _statusColor(req.status), fontSize: 12),
+                  style: TextStyle(
+                    color: _statusColor(req.status),
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),

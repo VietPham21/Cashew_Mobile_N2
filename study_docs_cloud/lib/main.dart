@@ -21,9 +21,7 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   await Supabase.initialize(
     url: SupabaseConstants.supabaseUrl,
@@ -59,7 +57,47 @@ class StudyDocsApp extends StatelessWidget {
         title: 'Study Docs Cloud',
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF187E68),
+            surface: const Color(0xFFFBFCF9),
+          ),
+          scaffoldBackgroundColor: const Color(0xFFF4F6F1),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFFF4F6F1),
+            foregroundColor: Color(0xFF1B2923),
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            titleTextStyle: TextStyle(
+              color: Color(0xFF1B2923),
+              fontSize: 19,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Color(0xFFE1E7E0)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(color: Color(0xFFE1E7E0)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(14),
+              borderSide: const BorderSide(
+                color: Color(0xFF187E68),
+                width: 1.5,
+              ),
+            ),
+          ),
+          snackBarTheme: SnackBarThemeData(
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
+          ),
           useMaterial3: true,
         ),
         home: const _AppRouter(),

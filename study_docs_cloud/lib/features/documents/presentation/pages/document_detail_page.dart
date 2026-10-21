@@ -100,7 +100,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
       builder: (ctx) => AlertDialog(
         title: const Row(
           children: [
-            Icon(Icons.library_books, color: Colors.indigo),
+            Icon(Icons.library_books, color: Color(0xFF245B45)),
             SizedBox(width: 8),
             Text('Request to Borrow'),
           ],
@@ -135,7 +135,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
             icon: const Icon(Icons.send),
             label: const Text('Send Request'),
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.indigo,
+              backgroundColor: const Color(0xFF245B45),
               foregroundColor: Colors.white,
             ),
           ),
@@ -182,8 +182,6 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Chi tiet tai lieu'),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
         actions: [
           if (widget.canEdit)
             IconButton(
@@ -324,7 +322,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                     icon: const Icon(Icons.library_books),
                     label: const Text('Request to Borrow'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.indigo,
+                      backgroundColor: const Color(0xFF245B45),
                       foregroundColor: Colors.white,
                       minimumSize: const Size.fromHeight(50),
                       shape: RoundedRectangleBorder(
@@ -525,7 +523,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                   icon: const Icon(Icons.open_in_new, size: 16),
                   label: const Text('Mo file'),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.indigo,
+                    backgroundColor: const Color(0xFF245B45),
                     foregroundColor: Colors.white,
                   ),
                 ),

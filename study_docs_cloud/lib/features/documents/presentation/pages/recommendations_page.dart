@@ -123,14 +123,18 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                                   vertical: 2,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: Colors.indigo.shade50,
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .primaryContainer,
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: Text(
                                   '#$t',
                                   style: TextStyle(
                                     fontSize: 11,
-                                    color: Colors.indigo.shade600,
+                                    color: Theme.of(context)
+                                        .colorScheme
+                                        .onPrimaryContainer,
                                   ),
                                 ),
                               ),
@@ -152,11 +156,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('For You'),
-        backgroundColor: Colors.indigo,
-        foregroundColor: Colors.white,
-      ),
+      appBar: AppBar(title: const Text('For You')),
       body: Consumer<DocumentsViewModel>(
         builder: (context, vm, _) {
           if (vm.isLoading) {
@@ -171,7 +171,8 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                   Icon(
                     Icons.auto_awesome,
                     size: 72,
-                    color: Colors.indigo.shade200,
+                    color: Theme.of(context).colorScheme.primary
+                        .withValues(alpha: 0.35),
                   ),
                   const SizedBox(height: 16),
                   const Text(
@@ -205,19 +206,19 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                   horizontal: 16,
                   vertical: 10,
                 ),
-                color: Colors.indigo.shade50,
+                color: Theme.of(context).colorScheme.primaryContainer,
                 child: Row(
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.auto_awesome,
-                      color: Colors.indigo,
+                      color: Theme.of(context).colorScheme.primary,
                       size: 16,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       'Based on your tags — ${vm.recommendations.length} suggestions',
                       style: TextStyle(
-                        color: Colors.indigo.shade700,
+                        color: Theme.of(context).colorScheme.onPrimaryContainer,
                         fontSize: 13,
                       ),
                     ),

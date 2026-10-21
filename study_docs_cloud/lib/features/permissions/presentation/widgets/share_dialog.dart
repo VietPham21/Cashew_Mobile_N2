@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../../domain/entities/permission.dart';
 import '../../data/repositories/permissions_repository_impl.dart';
 
@@ -38,8 +39,7 @@ class _ShareDialogState extends State<ShareDialog> {
   Future<void> _loadPermissions() async {
     setState(() => _loading = true);
     try {
-      _permissions =
-          await _repo.getPermissionsForDocument(widget.documentId);
+      _permissions = await _repo.getPermissionsForDocument(widget.documentId);
     } catch (e) {
       _error = e.toString();
     }
@@ -81,8 +81,10 @@ class _ShareDialogState extends State<ShareDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: Text('Chia se: ${widget.documentTitle}',
-          style: const TextStyle(fontSize: 16)),
+      title: Text(
+        'Chia se: ${widget.documentTitle}',
+        style: const TextStyle(fontSize: 16),
+      ),
       content: SizedBox(
         width: 400,
         child: Column(
@@ -107,49 +109,64 @@ class _ShareDialogState extends State<ShareDialog> {
                   value: _selectedLevel,
                   items: const [
                     DropdownMenuItem(
-                        value: PermissionLevel.view, child: Text('Xem')),
+                      value: PermissionLevel.view,
+                      child: Text('Xem'),
+                    ),
                     DropdownMenuItem(
-                        value: PermissionLevel.edit, child: Text('Sua')),
+                      value: PermissionLevel.edit,
+                      child: Text('Sua'),
+                    ),
                   ],
-                  onChanged: (v) =>
-                      setState(() => _selectedLevel = v!),
+                  onChanged: (v) => setState(() => _selectedLevel = v!),
                 ),
               ],
             ),
             const SizedBox(height: 8),
             if (_error != null)
-              Text(_error!,
-                  style: const TextStyle(color: Colors.red, fontSize: 12)),
+              Text(
+                _error!,
+                style: const TextStyle(color: Colors.red, fontSize: 12),
+              ),
             const SizedBox(height: 8),
             ElevatedButton.icon(
               onPressed: _loading ? null : _share,
               style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo),
+                backgroundColor: Theme.of(context).colorScheme.primary,
+              ),
               icon: const Icon(Icons.share, color: Colors.white),
-              label: const Text('Chia se',
-                  style: TextStyle(color: Colors.white)),
+              label: const Text(
+                'Chia se',
+                style: TextStyle(color: Colors.white),
+              ),
             ),
             const Divider(height: 24),
-            const Text('Da chia se voi:',
-                style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text(
+              'Da chia se voi:',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             if (_loading)
               const Center(child: CircularProgressIndicator())
             else if (_permissions.isEmpty)
-              const Text('Chua chia se voi ai',
-                  style: TextStyle(color: Colors.grey))
+              const Text(
+                'Chua chia se voi ai',
+                style: TextStyle(color: Colors.grey),
+              )
             else
-              ..._permissions.map((p) => ListTile(
-                    dense: true,
-                    leading: const Icon(Icons.person),
-                    title: Text(p.sharedWithEmail),
-                    subtitle: Text(
-                        p.level == PermissionLevel.view ? 'Xem' : 'Sua'),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.close, color: Colors.red),
-                      onPressed: () => _revoke(p.id),
-                    ),
-                  )),
+              ..._permissions.map(
+                (p) => ListTile(
+                  dense: true,
+                  leading: const Icon(Icons.person),
+                  title: Text(p.sharedWithEmail),
+                  subtitle: Text(
+                    p.level == PermissionLevel.view ? 'Xem' : 'Sua',
+                  ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.red),
+                    onPressed: () => _revoke(p.id),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
