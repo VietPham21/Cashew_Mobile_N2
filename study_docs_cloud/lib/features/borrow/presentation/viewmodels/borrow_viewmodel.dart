@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../domain/entities/borrow_request.dart';
 import '../../domain/repositories/borrow_repository.dart';
 import '../../../../core/services/notification_service.dart';
@@ -37,11 +40,13 @@ class BorrowViewModel extends ChangeNotifier {
     String? message,
   }) async {
     try {
-      await repository.sendRequest(
-        documentId: documentId,
-        ownerId: ownerId,
-        message: message,
-      );
+      await repository
+          .sendRequest(
+            documentId: documentId,
+            ownerId: ownerId,
+            message: message,
+          )
+          .timeout(const Duration(seconds: 20));
 
       // Gui notification cho owner
       await NotificationService.sendToUser(
@@ -53,7 +58,8 @@ class BorrowViewModel extends ChangeNotifier {
         type: 'borrow_request',
       );
 
-      await loadAll();
+      // Do not keep the request button spinning while the inbox refreshes.
+      unawaited(loadAll());
       return true;
     } catch (e) {
       errorMessage = e.toString();
@@ -68,16 +74,13 @@ class BorrowViewModel extends ChangeNotifier {
       final req = incomingRequests.firstWhere((r) => r.id == requestId);
 
       // Tu dong cap quyen view cho requester
-      await Supabase.instance.client.from('permissions').upsert(
-        {
-          'id': const Uuid().v4(),
-          'document_id': req.documentId,
-          'owner_id': req.ownerId,
-          'shared_with_user_id': req.requesterId,
-          'permission_level': 'view',
-        },
-        onConflict: 'document_id,shared_with_user_id',
-      );
+      await Supabase.instance.client.from('permissions').upsert({
+        'id': const Uuid().v4(),
+        'document_id': req.documentId,
+        'owner_id': req.ownerId,
+        'shared_with_user_id': req.requesterId,
+        'permission_level': 'view',
+      }, onConflict: 'document_id,shared_with_user_id');
 
       // Mark approved only after the permission was actually granted.
       await repository.updateStatus(requestId, BorrowStatus.approved);

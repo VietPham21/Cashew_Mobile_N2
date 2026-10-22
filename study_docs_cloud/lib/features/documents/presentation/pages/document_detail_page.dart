@@ -179,6 +179,8 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
               ? 'Supabase từ chối yêu cầu theo chính sách RLS. Kiểm tra quyền INSERT của borrow_requests và hồ sơ người dùng.'
               : error.contains('23505')
               ? 'Bạn đã gửi yêu cầu mượn tài liệu này rồi.'
+              : error.contains('TimeoutException')
+              ? 'Máy chủ phản hồi quá chậm. Hãy kiểm tra mục “Yêu cầu của tôi” trước khi gửi lại.'
               : error;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
