@@ -29,6 +29,7 @@ class DocumentDetailPage extends StatefulWidget {
 class _DocumentDetailPageState extends State<DocumentDetailPage> {
   bool _hasRequested = false;
   bool _checkingStatus = true;
+  bool _sendingRequest = false;
   bool _isOwner = false;
   String? _statusCheckError;
 
@@ -144,6 +145,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
     );
 
     if (confirmed == true && mounted) {
+      setState(() => _sendingRequest = true);
       final vm = context.read<BorrowViewModel>();
       final ok = await vm.sendRequest(
         documentId: widget.doc.id,
@@ -151,19 +153,38 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
         message: msgCtrl.text.trim().isEmpty ? null : msgCtrl.text.trim(),
       );
       if (mounted) {
+        setState(() => _sendingRequest = false);
         if (ok) {
           setState(() => _hasRequested = true);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Borrow request sent successfully!'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              backgroundColor: const Color(0xFF187E68),
+              duration: const Duration(seconds: 4),
+              content: Row(
+                children: [
+                  const Icon(Icons.check_circle_rounded, color: Colors.white),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Đã gửi yêu cầu mượn “${widget.doc.title}” thành công.',
+                    ),
+                  ),
+                ],
+              ),
             ),
           );
         } else {
+          final error = vm.errorMessage ?? 'Lỗi không xác định';
+          final friendlyError = error.contains('42501')
+              ? 'Supabase từ chối yêu cầu theo chính sách RLS. Kiểm tra quyền INSERT của borrow_requests và hồ sơ người dùng.'
+              : error.contains('23505')
+              ? 'Bạn đã gửi yêu cầu mượn tài liệu này rồi.'
+              : error;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(vm.errorMessage ?? 'Failed to send request'),
-              backgroundColor: Colors.red,
+              content: Text('Không gửi được yêu cầu: $friendlyError'),
+              backgroundColor: Colors.red.shade700,
+              duration: const Duration(seconds: 6),
             ),
           );
         }
@@ -318,9 +339,22 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                     const SizedBox(height: 8),
                   ],
                   ElevatedButton.icon(
-                    onPressed: _showBorrowDialog,
-                    icon: const Icon(Icons.library_books),
-                    label: const Text('Request to Borrow'),
+                    onPressed: _sendingRequest ? null : _showBorrowDialog,
+                    icon: _sendingRequest
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Icon(Icons.library_books),
+                    label: Text(
+                      _sendingRequest
+                          ? 'Đang gửi yêu cầu...'
+                          : 'Request to Borrow',
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF245B45),
                       foregroundColor: Colors.white,

@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:uuid/uuid.dart';
+
 import '../../domain/entities/borrow_request.dart';
 import '../../domain/repositories/borrow_repository.dart';
 
@@ -10,28 +12,31 @@ class BorrowRepositoryImpl implements BorrowRepository {
   BorrowRepositoryImpl({
     required SupabaseClient supabase,
     required String currentUserId,
-  })  : _client = supabase,
-        _currentUserId = currentUserId;
+  }) : _client = supabase,
+       _currentUserId = currentUserId;
 
   BorrowStatus _parseStatus(String s) {
     switch (s) {
-      case 'approved': return BorrowStatus.approved;
-      case 'rejected': return BorrowStatus.rejected;
-      default:         return BorrowStatus.pending;
+      case 'approved':
+        return BorrowStatus.approved;
+      case 'rejected':
+        return BorrowStatus.rejected;
+      default:
+        return BorrowStatus.pending;
     }
   }
 
   BorrowRequest _fromMap(Map<String, dynamic> m) {
     return BorrowRequest(
-      id:             m['id'] as String,
-      documentId:     m['document_id'] as String,
-      documentTitle:  m['document_title'] as String? ?? 'Unknown',
-      requesterId:    m['requester_id'] as String,
+      id: m['id'] as String,
+      documentId: m['document_id'] as String,
+      documentTitle: m['document_title'] as String? ?? 'Unknown',
+      requesterId: m['requester_id'] as String,
       requesterEmail: m['requester_email'] as String? ?? '',
-      ownerId:        m['owner_id'] as String,
-      status:         _parseStatus(m['status'] as String),
-      message:        m['message'] as String?,
-      createdAt:      DateTime.parse(m['created_at'] as String),
+      ownerId: m['owner_id'] as String,
+      status: _parseStatus(m['status'] as String),
+      message: m['message'] as String?,
+      createdAt: DateTime.parse(m['created_at'] as String),
     );
   }
 
@@ -41,13 +46,12 @@ class BorrowRepositoryImpl implements BorrowRepository {
     required String ownerId,
     String? message,
   }) async {
-    // Lay email nguoi gui
-    final userRes = await _client
-        .from('users')
-        .select('email')
-        .eq('id', _currentUserId)
-        .single();
-    final email = userRes['email'] as String? ?? '';
+    // Firebase is the authentication source. Avoid making request submission
+    // depend on a second RLS-protected lookup in public.users.
+    final email = FirebaseAuth.instance.currentUser?.email?.trim();
+    if (email == null || email.isEmpty) {
+      throw StateError('Không lấy được email tài khoản đang đăng nhập.');
+    }
 
     // Lay title cua document
     final docRes = await _client
@@ -58,14 +62,14 @@ class BorrowRepositoryImpl implements BorrowRepository {
     final title = docRes['title'] as String? ?? '';
 
     await _client.from('borrow_requests').insert({
-      'id':             const Uuid().v4(),
-      'document_id':    documentId,
+      'id': const Uuid().v4(),
+      'document_id': documentId,
       'document_title': title,
-      'requester_id':   _currentUserId,
+      'requester_id': _currentUserId,
       'requester_email': email,
-      'owner_id':       ownerId,
-      'status':         'pending',
-      'message':        message,
+      'owner_id': ownerId,
+      'status': 'pending',
+      'message': message,
     });
   }
 
