@@ -75,6 +75,7 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
     StudyDocument doc,
     DocumentsViewModel vm,
   ) {
+    final borrowViewModel = context.read<BorrowViewModel>();
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -83,6 +84,7 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
           canEdit: vm.canEdit(doc),
           canAccessFile: vm.canAccessFile(doc),
           viewModel: vm,
+          borrowViewModel: borrowViewModel,
         ),
       ),
     ).then((_) => vm.loadAll());
@@ -107,7 +109,9 @@ class _DocumentsListPageState extends State<DocumentsListPage> {
       MaterialPageRoute(
         builder: (_) => ChangeNotifierProvider.value(
           value: context.read<DocumentsViewModel>(),
-          child: const RecommendationsPage(),
+          child: RecommendationsPage(
+            borrowViewModel: context.read<BorrowViewModel>(),
+          ),
         ),
       ),
     );

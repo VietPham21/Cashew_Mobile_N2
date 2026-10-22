@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../domain/entities/study_document.dart';
@@ -13,6 +12,7 @@ class DocumentDetailPage extends StatefulWidget {
   final bool canEdit;
   final bool canAccessFile;
   final DocumentsViewModel viewModel;
+  final BorrowViewModel borrowViewModel;
 
   const DocumentDetailPage({
     super.key,
@@ -20,6 +20,7 @@ class DocumentDetailPage extends StatefulWidget {
     required this.canEdit,
     required this.canAccessFile,
     required this.viewModel,
+    required this.borrowViewModel,
   });
 
   @override
@@ -43,8 +44,9 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
     _isOwner = widget.doc.ownerId == widget.viewModel.currentUserId;
     try {
       if (!_isOwner) {
-        final vm = context.read<BorrowViewModel>();
-        final already = await vm.hasRequested(widget.doc.id);
+        final already = await widget.borrowViewModel.hasRequested(
+          widget.doc.id,
+        );
         if (mounted) setState(() => _hasRequested = already);
       }
     } catch (e) {
@@ -146,13 +148,14 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
 
     if (confirmed == true && mounted) {
       setState(() => _sendingRequest = true);
-      final vm = context.read<BorrowViewModel>();
-      final ok = await vm.sendRequest(
-        documentId: widget.doc.id,
-        ownerId: widget.doc.ownerId,
-        message: msgCtrl.text.trim().isEmpty ? null : msgCtrl.text.trim(),
-      );
-      if (mounted) {
+      try {
+        final vm = widget.borrowViewModel;
+        final ok = await vm.sendRequest(
+          documentId: widget.doc.id,
+          ownerId: widget.doc.ownerId,
+          message: msgCtrl.text.trim().isEmpty ? null : msgCtrl.text.trim(),
+        );
+        if (!mounted) return;
         setState(() => _sendingRequest = false);
         if (ok) {
           setState(() => _hasRequested = true);
@@ -190,6 +193,15 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
             ),
           );
         }
+      } catch (e) {
+        if (!mounted) return;
+        setState(() => _sendingRequest = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Không gửi được yêu cầu: $e'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
       }
     }
   }

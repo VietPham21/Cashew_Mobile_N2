@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/utils/responsive.dart';
+import '../../../borrow/presentation/viewmodels/borrow_viewmodel.dart';
 import '../../domain/entities/study_document.dart';
 import '../viewmodels/documents_viewmodel.dart';
 import 'document_detail_page.dart';
 
 class RecommendationsPage extends StatefulWidget {
-  const RecommendationsPage({super.key});
+  final BorrowViewModel borrowViewModel;
+
+  const RecommendationsPage({super.key, required this.borrowViewModel});
 
   @override
   State<RecommendationsPage> createState() => _RecommendationsPageState();
@@ -66,6 +69,7 @@ class _RecommendationsPageState extends State<RecommendationsPage> {
                 canEdit: false,
                 canAccessFile: vm.canAccessFile(doc),
                 viewModel: vm,
+                borrowViewModel: widget.borrowViewModel,
               ),
             ),
           );
