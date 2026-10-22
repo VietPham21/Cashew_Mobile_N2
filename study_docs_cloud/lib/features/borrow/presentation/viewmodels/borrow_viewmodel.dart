@@ -48,14 +48,17 @@ class BorrowViewModel extends ChangeNotifier {
           )
           .timeout(const Duration(seconds: 20));
 
-      // Gui notification cho owner
-      await NotificationService.sendToUser(
-        userId: ownerId,
-        title: 'New Borrow Request',
-        body: message?.isNotEmpty == true
-            ? message!
-            : 'Someone requested to borrow your document',
-        type: 'borrow_request',
+      // The borrow request is the primary operation. Notification delivery is
+      // best-effort and must never keep the UI waiting after the request saved.
+      unawaited(
+        NotificationService.sendToUser(
+          userId: ownerId,
+          title: 'New Borrow Request',
+          body: message?.isNotEmpty == true
+              ? message!
+              : 'Someone requested to borrow your document',
+          type: 'borrow_request',
+        ).timeout(const Duration(seconds: 5), onTimeout: () {}),
       );
 
       // Do not keep the request button spinning while the inbox refreshes.

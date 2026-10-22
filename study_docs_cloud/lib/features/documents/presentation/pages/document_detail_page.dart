@@ -332,7 +332,7 @@ class _DocumentDetailPageState extends State<DocumentDetailPage> {
                 children: [
                   if (_statusCheckError != null) ...[
                     Text(
-                      'Could not check previous requests. You can still try sending one.',
+                      'Không kiểm tra được yêu cầu cũ: $_statusCheckError. Bạn vẫn có thể gửi yêu cầu mới.',
                       style: TextStyle(
                         color: Colors.orange.shade800,
                         fontSize: 12,
