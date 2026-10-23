@@ -41,11 +41,6 @@ flutter run -d chrome --web-port=5000
 | `study_docs_cloud/` | Project Flutter của nhóm |
 | `budget/` | Mã nguồn Cashew gốc (tham khảo) |
 
-## Thành viên
-
-- [Tên 1 - MSSV]
-- [Tên 2 - MSSV]
-
 ## Ghi nguồn
 
 Repo này dựa trên / tham khảo [Cashew](https://github.com/jameskokoska/Cashew) của James Kokoska, phát hành theo giấy phép ghi trong file `LICENSE`.
