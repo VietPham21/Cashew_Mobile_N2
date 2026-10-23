@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bản Kiểm Thử — Study Docs Cloud</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card-bg: #1e293b;
+      --border: #334155;
+      --text: #f1f5f9;
+      --muted: #94a3b8;
+      --cyan: #38bdf8;
+      --emerald: #34d399;
+      --amber: #fbbf24;
+      --rose: #f43f5e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 30px 20px;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 35px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { font-size: 2.2rem; color: #fff; margin-bottom: 8px; }
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--cyan);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 12px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .subtitle { color: var(--muted); font-size: 1.05rem; }
+
+    section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      margin-bottom: 25px;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      color: var(--cyan);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+    }
+
+    th {
+      background: rgba(15, 23, 42, 0.7);
+      color: #e2e8f0;
+      font-weight: 600;
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tag-critical {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--rose);
+      font-weight: 600;
+      font-size: 0.75rem;
+      border: 1px solid rgba(244, 63, 94, 0.3);
+    }
+    .tag-high {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(251, 191, 36, 0.15);
+      color: var(--amber);
+      font-weight: 600;
+      font-size: 0.75rem;
+      border: 1px solid rgba(251, 191, 36, 0.3);
+    }
+    .tag-medium {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.15);
+      color: var(--cyan);
+      font-weight: 600;
+      font-size: 0.75rem;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+
+    code {
+      font-family: ui-monospace, Menlo, Consolas, monospace;
+      background: rgba(0,0,0,0.3);
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.85em;
+      color: #fca5a5;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 25px;
+    }
+    @media (max-width: 800px) {
+      .summary-grid { grid-template-columns: 1fr 1fr; }
+    }
+    .stat-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-num { font-size: 1.8rem; font-weight: 800; color: var(--emerald); }
+    .stat-label { font-size: 0.85rem; color: var(--muted); margin-top: 4px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="badge">Kế Hoạch & Kịch Bản Kiểm Thử</div>
+      <h1>Bản Kiểm Thử Ứng Dụng Study Docs Cloud</h1>
+      <p class="subtitle">Môn Phát triển ứng dụng di động — Nhóm N2</p>
+    </header>
+
+    <div class="summary-grid">
+      <div class="stat-card">
+        <div class="stat-num">4</div>
+        <div class="stat-label">Phân hệ kiểm thử</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">17+</div>
+        <div class="stat-label">Ca kiểm thử (Test Cases)</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">100%</div>
+        <div class="stat-label">Bao phủ RLS & CRUD</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">Unit + E2E</div>
+        <div class="stat-label">Cấp độ kiểm thử</div>
+      </div>
+    </div>
+
+    <!-- 1. PHÂN HỆ XÁC THỰC -->
+    <section>
+      <h2>🔥 1. Phân hệ Xác thực (Authentication)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 120px;">Mã TC</th>
+            <th>Tên kịch bản</th>
+            <th>Các bước thực hiện</th>
+            <th>Kết quả mong đợi</th>
+            <th style="width: 100px;">Mức độ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TC-AUTH-01</strong></td>
+            <td>Đăng nhập Google thành công</td>
+            <td>1. Bấm "Đăng nhập bằng Google"<br>2. Chọn tài khoản Google hợp lệ</td>
+            <td>Đăng nhập thành công, nhận Firebase JWT, profile được đồng bộ vào bảng <code>users</code>, điều hướng vào danh sách tài liệu.</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-AUTH-02</strong></td>
+            <td>Hủy thao tác đăng nhập</td>
+            <td>1. Bấm đăng nhập<br>2. Đóng hộp thoại chọn tài khoản</td>
+            <td>Ứng dụng không bị crash, giao diện giữ nguyên ở màn hình Login và hiển thị thông báo hủy.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-AUTH-03</strong></td>
+            <td>Đăng xuất (Sign Out)</td>
+            <td>1. Bấm nút đăng xuất ở thanh AppBar<br>2. Xác nhận đăng xuất</td>
+            <td>Phiên làm việc kết thúc, hủy token trong bộ nhớ, xóa trạng thái ViewModel, quay về màn hình Login.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-AUTH-04</strong></td>
+            <td>Đăng ký Token FCM</td>
+            <td>1. Đăng nhập vào app trên thiết bị<br>2. Kiểm tra token gửi về backend</td>
+            <td>Token FCM được lưu trữ thành công vào trường <code>fcm_token</code> của người dùng trong Supabase.</td>
+            <td><span class="tag-medium">Medium</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 2. PHÂN HỆ QUẢN LÝ TÀI LIỆU -->
+    <section>
+      <h2>📁 2. Phân hệ Quản lý Tài liệu (Documents Management)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 120px;">Mã TC</th>
+            <th>Tên kịch bản</th>
+            <th>Các bước thực hiện</th>
+            <th>Kết quả mong đợi</th>
+            <th style="width: 100px;">Mức độ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TC-DOC-01</strong></td>
+            <td>Thêm mới tài liệu hợp lệ</td>
+            <td>1. Nhập Tiêu đề, Môn học, chọn Loại (lecture)<br>2. Nhập tags và ghi chú<br>3. Bấm "Lưu"</td>
+            <td>Bản ghi tạo thành công trong DB, hiển thị ngay trên đầu danh sách (sắp xếp <code>updated_at DESC</code>).</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-02</strong></td>
+            <td>Validate bỏ trống Tiêu đề</td>
+            <td>1. Bỏ trống ô Tiêu đề<br>2. Bấm "Lưu"</td>
+            <td>Chặn submit, ném lỗi <code>ValidationFailure</code>, hiển thị cảnh báo đỏ bắt buộc nhập tiêu đề.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-03</strong></td>
+            <td>Validate bỏ trống Môn học</td>
+            <td>1. Nhập Tiêu đề nhưng để trống Môn học<br>2. Bấm "Lưu"</td>
+            <td>Chặn submit, ném lỗi <code>ValidationFailure</code>, không gửi truy vấn lên database.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-04</strong></td>
+            <td>Đính kèm tệp tin</td>
+            <td>1. Chọn tệp PDF/ảnh từ máy<br>2. Bấm "Lưu"</td>
+            <td>Tệp được tải nhị phân lên bucket <code>documents</code>, lưu đúng <code>file_path</code>, <code>file_name</code>, <code>file_size</code>.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-05</strong></td>
+            <td>Chỉnh sửa tài liệu</td>
+            <td>1. Mở tài liệu chính chủ<br>2. Sửa thông tin và bấm Lưu</td>
+            <td>Thông tin được cập nhật, trường <code>updated_at</code> làm mới mốc thời gian hiện tại.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-06</strong></td>
+            <td>Xóa tài liệu và tệp lưu trữ</td>
+            <td>1. Bấm nút Xóa tài liệu<br>2. Xác nhận trong hộp thoại</td>
+            <td>Dữ liệu bị xóa khỏi bảng <code>documents</code>, đồng thời tệp trong Supabase Storage cũng được dọn dẹp.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-07</strong></td>
+            <td>Đính kèm vị trí địa lý (GPS)</td>
+            <td>1. Chọn vị trí trên <code>LocationPickerPage</code><br>2. Nhập tên địa điểm và Lưu</td>
+            <td>Lưu thành công tọa độ <code>latitude</code>, <code>longitude</code> và <code>location_name</code>.</td>
+            <td><span class="tag-medium">Medium</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-08</strong></td>
+            <td>Tìm kiếm và lọc tài liệu</td>
+            <td>1. Gõ từ khóa vào ô tìm kiếm<br>2. Chọn filter chip theo loại tài liệu</td>
+            <td>Kết quả hiển thị đúng các tài liệu khớp từ khóa trên title, course, notes và đúng type đã chọn.</td>
+            <td><span class="tag-medium">Medium</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-DOC-09</strong></td>
+            <td>Gợi ý tài liệu ("For You")</td>
+            <td>1. Mở tab gợi ý <code>RecommendationsPage</code></td>
+            <td>Hiển thị tối đa 10 tài liệu công khai có số lượng tags trùng nhiều nhất với bộ sưu tập của user.</td>
+            <td><span class="tag-medium">Medium</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 3. PHÂN HỆ MƯỢN & CHIA SẺ -->
+    <section>
+      <h2>🤝 3. Phân hệ Mượn & Chia sẻ (Borrow & Permissions)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 120px;">Mã TC</th>
+            <th>Tên kịch bản</th>
+            <th>Các bước thực hiện</th>
+            <th>Kết quả mong đợi</th>
+            <th style="width: 100px;">Mức độ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TC-BRW-01</strong></td>
+            <td>Gửi yêu cầu mượn tài liệu</td>
+            <td>1. User B xem tài liệu Public của User A<br>2. Bấm "Yêu cầu mượn" kèm lời nhắn</td>
+            <td>Tạo bản ghi trong <code>borrow_requests</code> với <code>status: 'pending'</code>, email người mượn lưu chính xác.</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-BRW-02</strong></td>
+            <td>Chủ tài liệu duyệt yêu cầu</td>
+            <td>1. User A mở <code>BorrowRequestsPage</code><br>2. Bấm "Chấp nhận" (Approve)</td>
+            <td>Yêu cầu chuyển thành <code>approved</code>, tự động cấp quyền <code>view</code> trong bảng <code>permissions</code> cho User B.</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-BRW-03</strong></td>
+            <td>Chủ tài liệu từ chối yêu cầu</td>
+            <td>1. User A mở <code>BorrowRequestsPage</code><br>2. Bấm "Từ chối" (Reject)</td>
+            <td>Yêu cầu chuyển thành <code>rejected</code>, User B không được cấp quyền xem file.</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-BRW-04</strong></td>
+            <td>Chia sẻ trực tiếp qua Email</td>
+            <td>1. Mở ShareDialog<br>2. Nhập email người nhận và quyền (view/edit)</td>
+            <td>Bản ghi permission được tạo, người nhận có thể thấy tài liệu trong mục "Được chia sẻ với tôi".</td>
+            <td><span class="tag-high">High</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- 4. PHÂN HỆ BẢO MẬT & RLS -->
+    <section>
+      <h2>🔒 4. Phân hệ Bảo Mật & Storage (Security & RLS)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 120px;">Mã TC</th>
+            <th>Tên kịch bản</th>
+            <th>Các bước thực hiện</th>
+            <th>Kết quả mong đợi</th>
+            <th style="width: 100px;">Mức độ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TC-SEC-01</strong></td>
+            <td>Chặn xem tài liệu Private (RLS)</td>
+            <td>Tài liệu đặt <code>is_public: false</code>. Người lạ query SELECT</td>
+            <td>Supabase RLS trả về 0 bản ghi, metadata được bảo vệ tuyệt đối.</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-SEC-02</strong></td>
+            <td>Chặn chỉnh sửa trái phép</td>
+            <td>User B cố gắng UPDATE tài liệu của User A</td>
+            <td>RLS Policy <code>documents_update</code> từ chối thao tác, báo lỗi không đủ quyền hạn.</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-SEC-03</strong></td>
+            <td>Xem file qua Signed URL</td>
+            <td>User có quyền view mở file đính kèm</td>
+            <td>Hệ thống sinh Signed URL có chữ ký bảo mật, hết hạn sau 300 giây.</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+          <tr>
+            <td><strong>TC-SEC-04</strong></td>
+            <td>Chặn tải file trực tiếp (Public URL)</td>
+            <td>Thử tải file qua URL công khai thông thường</td>
+            <td>Storage trả về HTTP 403 / 404 do Bucket <code>documents</code> được đặt là Private.</td>
+            <td><span class="tag-critical">Critical</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</body>
+</html>

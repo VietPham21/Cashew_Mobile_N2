@@ -28,10 +28,12 @@ flutter run -d chrome --web-port=5000
 
 - **Đăng nhập Google lỗi:** kiểm tra đã chạy đúng `--web-port=5000` chưa.
 - **Lỗi package/cache:**
+
 ```bash
   flutter clean
   flutter pub get
 ```
+
 - **`No pubspec.yaml file found`:** đang đứng sai thư mục, phải `cd` vào `study_docs_cloud`.
 
 ## Cấu trúc repo
@@ -39,6 +41,7 @@ flutter run -d chrome --web-port=5000
 | Thư mục | Nội dung |
 |---|---|
 | `study_docs_cloud/` | Project Flutter của nhóm |
+| `docs/` | Sơ đồ kiến trúc & Bản kiểm thử |
 | `budget/` | Mã nguồn Cashew gốc (tham khảo) |
 
 ## Ghi nguồn
